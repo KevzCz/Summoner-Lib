@@ -14,11 +14,12 @@ import java.util.UUID;
 public class PlayerSummonData {
 
     private static final String SUMMONS_KEY_PREFIX = "summonerlib_summons_";
+    private static final String PERSISTENT_KEY = "summonerlib_persistent_data";
 
     public static void addSummon(LivingEntity player, String summonType, UUID summonUuid) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+        if (!(player instanceof ServerPlayerEntity)) return;
 
-        NbtCompound nbt = getPersistentData(serverPlayer);
+        NbtCompound nbt = getPersistentData((ServerPlayerEntity) player);
         String key = SUMMONS_KEY_PREFIX + summonType;
 
         NbtList list;
@@ -30,13 +31,12 @@ public class PlayerSummonData {
 
         list.add(new NbtIntArray(uuidToIntArray(summonUuid)));
         nbt.put(key, list);
-        savePersistentData(serverPlayer, nbt);
     }
 
     public static void removeSummon(LivingEntity player, String summonType, UUID summonUuid) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+        if (!(player instanceof ServerPlayerEntity)) return;
 
-        NbtCompound nbt = getPersistentData(serverPlayer);
+        NbtCompound nbt = getPersistentData((ServerPlayerEntity) player);
         String key = SUMMONS_KEY_PREFIX + summonType;
 
         if (nbt.contains(key, NbtElement.LIST_TYPE)) {
@@ -54,7 +54,6 @@ public class PlayerSummonData {
             }
 
             nbt.put(key, newList);
-            savePersistentData(serverPlayer, nbt);
         }
     }
 
@@ -84,18 +83,17 @@ public class PlayerSummonData {
     }
 
     public static void clearAllSummons(LivingEntity player, String summonType) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+        if (!(player instanceof ServerPlayerEntity)) return;
 
-        NbtCompound nbt = getPersistentData(serverPlayer);
+        NbtCompound nbt = getPersistentData((ServerPlayerEntity) player);
         String key = SUMMONS_KEY_PREFIX + summonType;
         nbt.remove(key);
-        savePersistentData(serverPlayer, nbt);
     }
 
     public static void clearAllSummons(LivingEntity player) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+        if (!(player instanceof ServerPlayerEntity)) return;
 
-        NbtCompound nbt = getPersistentData(serverPlayer);
+        NbtCompound nbt = getPersistentData((ServerPlayerEntity) player);
         List<String> keysToRemove = new ArrayList<>();
 
         for (String key : nbt.getKeys()) {
@@ -105,25 +103,21 @@ public class PlayerSummonData {
         }
 
         keysToRemove.forEach(nbt::remove);
-        savePersistentData(serverPlayer, nbt);
     }
 
     private static NbtCompound getPersistentData(ServerPlayerEntity player) {
-        NbtCompound playerData = new NbtCompound();
-        player.writeNbt(playerData);
 
-        if (!playerData.contains("summonerlib_data")) {
-            playerData.put("summonerlib_data", new NbtCompound());
+        NbtCompound playerNbt = new NbtCompound();
+        player.writeNbt(playerNbt);
+
+        if (!playerNbt.contains(PERSISTENT_KEY, NbtElement.COMPOUND_TYPE)) {
+            NbtCompound summonerData = new NbtCompound();
+            playerNbt.put(PERSISTENT_KEY, summonerData);
+            player.readNbt(playerNbt);
+            return summonerData;
         }
 
-        return playerData.getCompound("summonerlib_data");
-    }
-
-    private static void savePersistentData(ServerPlayerEntity player, NbtCompound data) {
-        NbtCompound playerData = new NbtCompound();
-        player.writeNbt(playerData);
-        playerData.put("summonerlib_data", data);
-        player.readNbt(playerData);
+        return playerNbt.getCompound(PERSISTENT_KEY);
     }
 
     private static int[] uuidToIntArray(UUID uuid) {
