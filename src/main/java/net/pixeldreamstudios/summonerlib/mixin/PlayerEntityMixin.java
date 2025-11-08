@@ -24,6 +24,10 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 				.add(SummonerAttributes.MAX_SUMMONS)
 				.add(SummonerAttributes.SUMMON_DAMAGE)
 				.add(SummonerAttributes.SUMMON_HEALTH)
-				.add(SummonerAttributes.SUMMON_DURATION);
+				.add(SummonerAttributes.SUMMON_DURATION)
+				.add(SummonerAttributes.SUMMON_ARMOR)
+				.add(SummonerAttributes.SUMMON_CRIT_CHANCE)
+				.add(SummonerAttributes.SUMMON_CRIT_DAMAGE)
+				;
 	}
 }

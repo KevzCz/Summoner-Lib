@@ -50,6 +50,36 @@ public class SummonerAttributes {
             ).setTracked(true)
     );
 
+    public static final RegistryEntry<EntityAttribute> SUMMON_CRIT_CHANCE = register(
+            "summon_crit_chance",
+            new ClampedEntityAttribute(
+                    "attribute.name.summonerlib.summon_crit_chance",
+                    0.0,
+                    0.0,
+                    1.0
+            ).setTracked(true)
+    );
+
+    public static final RegistryEntry<EntityAttribute> SUMMON_CRIT_DAMAGE = register(
+            "summon_crit_damage",
+            new ClampedEntityAttribute(
+                    "attribute.name.summonerlib.summon_crit_damage",
+                    1.5,
+                    1.0,
+                    10.0
+            ).setTracked(true)
+    );
+
+    public static final RegistryEntry<EntityAttribute> SUMMON_ARMOR = register(
+            "summon_armor",
+            new ClampedEntityAttribute(
+                    "attribute.name.summonerlib.summon_armor",
+                    0.0,
+                    0.0,
+                    30.0
+            ).setTracked(true)
+    );
+
     private static RegistryEntry<EntityAttribute> register(String name, EntityAttribute attribute) {
         return Registry.registerReference(
                 Registries.ATTRIBUTE,
