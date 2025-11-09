@@ -4,7 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.pixeldreamstudios.summonerlib.attribute.SummonerAttributes;
+import net.pixeldreamstudios.summonerlib.compat.RPGSystemsCritCompat;
 import net.pixeldreamstudios.summonerlib.network.payload.SummonRemovePayload;
 import net.pixeldreamstudios.summonerlib.network.payload.SummonSyncPayload;
 import net.pixeldreamstudios.summonerlib.network.payload.UnsummonAllPayload;
@@ -34,7 +36,10 @@ public class SummonerLib implements ModInitializer {
 				}
 			});
 		});
-
+		if (FabricLoader.getInstance().isModLoaded("rpg-systems"))
+		{
+			RPGSystemsCritCompat.init();
+		}
 		ServerTickEvents.END_WORLD_TICK.register(SummonTracker::tick);
 
 		LOGGER.info("Summoner Lib initialized!");

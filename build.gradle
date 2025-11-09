@@ -12,6 +12,7 @@ base {
 
 repositories {
 	maven { url 'https://api.modrinth.com/maven' }
+	maven {url "https://cursemaven.com" }
 }
 
 dependencies {
@@ -21,7 +22,9 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation("maven.modrinth:spell-engine:${project.spell_engine_version}+1.21.1-fabric")
 	modImplementation("maven.modrinth:spell-power:${project.spell_power_version}+1.21.1-fabric")
-	// Fabric API. This is technically optional, but you probably want it anyway.
+
+
+	modCompileOnly "curse.maven:rpg-systems-1337672:7177730"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
 }
