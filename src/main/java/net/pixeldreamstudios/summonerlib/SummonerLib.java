@@ -1,13 +1,15 @@
 package net.pixeldreamstudios.summonerlib;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.pixeldreamstudios.summonerlib.attribute.SummonerAttributes;
-import net.pixeldreamstudios.summonerlib.event.PlayerEventHandler;
-import net.pixeldreamstudios.summonerlib.event.SummonEventHandler;
 import net.pixeldreamstudios.summonerlib.network.payload.SummonRemovePayload;
 import net.pixeldreamstudios.summonerlib.network.payload.SummonSyncPayload;
+import net.pixeldreamstudios.summonerlib.network.payload.UnsummonAllPayload;
 import net.pixeldreamstudios.summonerlib.registry.SummonerRegistry;
+import net.pixeldreamstudios.summonerlib.tracker.SummonTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +19,23 @@ public class SummonerLib implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Initializing Summoner Lib...");
-
 		SummonerAttributes.register();
 		SummonerRegistry.register();
 
+		PayloadTypeRegistry.playC2S().register(UnsummonAllPayload.ID, UnsummonAllPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(SummonSyncPayload.ID, SummonSyncPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(SummonRemovePayload.ID, SummonRemovePayload.CODEC);
 
-		SummonEventHandler.register();
-		PlayerEventHandler.register();
+		ServerPlayNetworking.registerGlobalReceiver(UnsummonAllPayload.ID, (payload, context) -> {
+			context.server().execute(() -> {
+				var player = context.player();
+				if (player != null && player.getWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+					SummonTracker.removeAllSummonsForPlayer(player.getUuid(), serverWorld);
+				}
+			});
+		});
+
+		ServerTickEvents.END_WORLD_TICK.register(SummonTracker::tick);
 
 		LOGGER.info("Summoner Lib initialized!");
 	}

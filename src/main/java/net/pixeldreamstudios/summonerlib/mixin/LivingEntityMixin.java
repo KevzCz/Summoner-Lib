@@ -17,8 +17,11 @@ public abstract class LivingEntityMixin {
 
     @ModifyVariable(
             method = "damage",
-            at = @At("HEAD"),
-            argsOnly = true
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"
+            ),
+            ordinal = 0
     )
     private float applySummonCritDamage(float amount, DamageSource source) {
         Entity attacker = source.getAttacker();

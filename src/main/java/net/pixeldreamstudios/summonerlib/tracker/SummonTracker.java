@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.pixeldreamstudios.summonerlib.SummonerLib;
 import net.pixeldreamstudios.summonerlib.data.SummonData;
 import net.pixeldreamstudios.summonerlib.manager.SummonLifecycleManager;
 import net.pixeldreamstudios.summonerlib.network.payload.SummonRemovePayload;
@@ -112,7 +111,20 @@ public class SummonTracker {
             ServerPlayNetworking.send(player, payload);
         }
     }
-
+    public static void removeAllSummonsForPlayer(UUID playerUuid, ServerWorld world) {
+        List<SummonData> summons = PLAYER_SUMMONS.remove(playerUuid);
+        if (summons != null) {
+            for (SummonData data : summons) {
+                Entity entity = data.getEntity();
+                if (entity != null && !entity.isRemoved()) {
+                    SummonLifecycleManager.onSummonExpire(data, world);
+                    entity.discard();
+                    syncRemoveToClients(world, data.entityUuid);
+                }
+                ENTITY_LOOKUP.remove(data.entityUuid);
+            }
+        }
+    }
     public static boolean isSpellSummon(UUID entityUuid) {
         return ENTITY_LOOKUP.containsKey(entityUuid);
     }

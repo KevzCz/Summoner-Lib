@@ -5,5 +5,8 @@
   "attribute.name.summonerlib.summon_duration": "Summon Duration",
   "attribute.name.summonerlib.summon_crit_chance": "Summon Crit Chance",
   "attribute.name.summonerlib.summon_crit_damage": "Summon Crit Damage",
-  "attribute.name.summonerlib.summon_armor": "Summon Armor"
+  "attribute.name.summonerlib.summon_armor": "Summon Armor",
+
+  "key.summonerlib.unsummon_all": "Unsummon All",
+  "category.summonerlib.keybinds": "Summoner Lib"
 }
