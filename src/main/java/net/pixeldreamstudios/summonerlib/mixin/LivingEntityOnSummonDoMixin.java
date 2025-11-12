@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityDeathMixin {
+public abstract class LivingEntityOnSummonDoMixin {
 
     @Inject(method = "damage", at = @At("RETURN"))
     private void onDamageReturn(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
