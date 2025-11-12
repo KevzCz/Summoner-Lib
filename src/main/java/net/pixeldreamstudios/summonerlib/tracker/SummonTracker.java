@@ -24,7 +24,9 @@ public class SummonTracker {
             int lifetimeTicks,
             boolean allowInteraction,
             String summonType,
-            boolean persistent
+            boolean persistent,
+            int slotCost,
+            String groupId
     ) {
         UUID ownerUuid = owner.getUuid();
         UUID entityUuid = entity.getUuid();
@@ -41,7 +43,9 @@ public class SummonTracker {
                 summonType,
                 entity,
                 summonIndex,
-                persistent
+                persistent,
+                slotCost,
+                groupId
         );
 
         playerSummons.add(data);
@@ -50,7 +54,6 @@ public class SummonTracker {
         if (entity.getWorld() instanceof ServerWorld serverWorld) {
             syncToClients(serverWorld, entityUuid, summonType, true);
         }
-
     }
 
     public static void unregisterSummon(UUID entityUuid) {
@@ -85,7 +88,9 @@ public class SummonTracker {
                     oldData.summonType,
                     oldData.entityRef,
                     i,
-                    oldData.persistent
+                    oldData.persistent,
+                    oldData.slotCost,
+                    oldData.groupId
             );
             summons.remove(oldData);
             summons.add(newData);
@@ -111,6 +116,7 @@ public class SummonTracker {
             ServerPlayNetworking.send(player, payload);
         }
     }
+
     public static void removeAllSummonsForPlayer(UUID playerUuid, ServerWorld world) {
         List<SummonData> summons = PLAYER_SUMMONS.remove(playerUuid);
         if (summons != null) {
@@ -125,6 +131,7 @@ public class SummonTracker {
             }
         }
     }
+
     public static boolean isSpellSummon(UUID entityUuid) {
         return ENTITY_LOOKUP.containsKey(entityUuid);
     }
@@ -173,6 +180,59 @@ public class SummonTracker {
                 .min(Comparator.comparingLong(s -> s.spawnTick))
                 .map(s -> s.entityUuid)
                 .orElse(null);
+    }
+
+    public static int getPlayerSummonSlotsByType(UUID playerUuid, String summonType) {
+        List<SummonData> summons = PLAYER_SUMMONS.get(playerUuid);
+        if (summons == null) return 0;
+        return summons.stream()
+                .filter(s -> s.summonType.equals(summonType))
+                .mapToInt(s -> s.slotCost)
+                .sum();
+    }
+
+    public static int getTotalPlayerSummonSlots(UUID playerUuid) {
+        List<SummonData> summons = PLAYER_SUMMONS.get(playerUuid);
+        if (summons == null) return 0;
+        return summons.stream()
+                .mapToInt(s -> s.slotCost)
+                .sum();
+    }
+
+    public static UUID getNewestSummonByType(UUID playerUuid, String summonType) {
+        List<SummonData> summons = PLAYER_SUMMONS.get(playerUuid);
+        if (summons == null) return null;
+
+        return summons.stream()
+                .filter(s -> s.summonType.equals(summonType))
+                .max(Comparator.comparingLong(s -> s.spawnTick))
+                .map(s -> s.entityUuid)
+                .orElse(null);
+    }
+
+    public static UUID getSummonByTypeAndIndex(UUID playerUuid, String summonType, int index) {
+        List<SummonData> summons = PLAYER_SUMMONS.get(playerUuid);
+        if (summons == null) return null;
+
+        List<SummonData> typedSummons = summons.stream()
+                .filter(s -> s.summonType.equals(summonType))
+                .sorted(Comparator.comparingLong(s -> s.spawnTick))
+                .toList();
+
+        if (index >= 0 && index < typedSummons.size()) {
+            return typedSummons.get(index).entityUuid;
+        }
+
+        return null;
+    }
+
+    public static List<UUID> getPlayerSummonsByGroup(UUID playerUuid, String groupId) {
+        List<SummonData> summons = PLAYER_SUMMONS.get(playerUuid);
+        if (summons == null) return Collections.emptyList();
+        return summons.stream()
+                .filter(s -> s.groupId.equals(groupId))
+                .map(s -> s.entityUuid)
+                .toList();
     }
 
     public static void tick(ServerWorld world) {

@@ -15,6 +15,8 @@ public class SummonData {
     public boolean hasShownWarning = false;
     public final int summonIndex;
     public final boolean persistent;
+    public final int slotCost;
+    public final String groupId;
 
     public SummonData(
             UUID entityUuid,
@@ -25,7 +27,9 @@ public class SummonData {
             String summonType,
             Entity entityRef,
             int summonIndex,
-            boolean persistent
+            boolean persistent,
+            int slotCost,
+            String groupId
     ) {
         this.entityUuid = entityUuid;
         this.ownerUuid = ownerUuid;
@@ -36,6 +40,8 @@ public class SummonData {
         this.entityRef = entityRef;
         this.summonIndex = summonIndex;
         this.persistent = persistent;
+        this.slotCost = Math.max(1, slotCost);
+        this.groupId = groupId;
     }
 
     public Entity getEntity() {

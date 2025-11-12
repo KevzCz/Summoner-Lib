@@ -16,6 +16,8 @@ public class SummonBuilder<T extends Entity> {
     private int lifetimeTicks = -1;
     private boolean allowInteraction = false;
     private boolean persistent = false;
+    private int slotCost = 1;
+    private String groupId = "default";
     private Consumer<T> onSpawn;
     private Consumer<T> onExpire;
 
@@ -54,6 +56,16 @@ public class SummonBuilder<T extends Entity> {
         return this;
     }
 
+    public SummonBuilder<T> slotCost(int cost) {
+        this.slotCost = Math.max(1, cost);
+        return this;
+    }
+
+    public SummonBuilder<T> group(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
     public SummonBuilder<T> onSpawn(Consumer<T> callback) {
         this.onSpawn = callback;
         return this;
@@ -85,7 +97,9 @@ public class SummonBuilder<T extends Entity> {
                 lifetimeTicks,
                 allowInteraction,
                 summonType,
-                persistent
+                persistent,
+                slotCost,
+                groupId
         );
 
         return entity;
