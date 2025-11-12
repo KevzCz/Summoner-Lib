@@ -40,7 +40,7 @@ public class SummonData {
         this.entityRef = entityRef;
         this.summonIndex = summonIndex;
         this.persistent = persistent;
-        this.slotCost = Math.max(1, slotCost);
+        this.slotCost = Math.max(0, slotCost);
         this.groupId = groupId;
     }
 
