@@ -43,6 +43,20 @@ public class SummonControlUtil {
     }
 
     /**
+     * Force all summons belonging to a player to attack a target
+     */
+    public static void forceAllSummonsAttackTarget(PlayerEntity owner, LivingEntity target) {
+        List<UUID> allSummons = SummonTracker.getPlayerSummons(owner.getUuid());
+
+        for (UUID uuid : allSummons) {
+            SummonData data = SummonTracker.getSummonData(uuid);
+            if (data != null && data.getEntity() instanceof LivingEntity living) {
+                forceAttackTarget(living, target);
+            }
+        }
+    }
+
+    /**
      * Force all summons in a group to attack a target
      */
     public static void forceGroupAttackTarget(PlayerEntity owner, String groupId, LivingEntity target) {
