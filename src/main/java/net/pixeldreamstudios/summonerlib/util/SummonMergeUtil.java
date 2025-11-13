@@ -33,13 +33,11 @@ import java.util.function.BiConsumer;
         }
 
         if (summons.size() == 1) {
-            // Nothing to merge
             UUID uuid = summons.get(0);
             SummonData data = SummonTracker.getSummonData(uuid);
             return data != null ? (T) data.getEntity() : null;
         }
 
-        // Get oldest summon (the one to keep)
         UUID oldestUuid = SummonTracker.getOldestSummonByType(owner.getUuid(), summonType);
         SummonData oldestData = SummonTracker.getSummonData(oldestUuid);
 
@@ -51,10 +49,9 @@ import java.util.function.BiConsumer;
         int totalSlots = oldestData.slotCost;
         int totalCount = 1;
 
-        // Merge all others into the oldest
         for (UUID uuid : summons) {
             if (uuid.equals(oldestUuid)) {
-                continue; // Skip the one we're keeping
+                continue;
             }
 
             SummonData data = SummonTracker.getSummonData(uuid);
@@ -64,19 +61,18 @@ import java.util.function.BiConsumer;
 
                 Entity entity = data.getEntity();
                 if (entity != null) {
-                    entity.discard(); // Remove the merged summon
+                    entity.discard();
                 }
 
                 SummonManager.unregisterSummon(owner, uuid, summonType);
             }
         }
 
-        // Now re-register the kept summon with new slot cost
         if (keepEntity != null) {
-            // Unregister old
+
             SummonManager.unregisterSummon(owner, oldestUuid, summonType);
 
-            // Re-register with combined slot cost
+
             SummonManager.registerSummon(
                     owner,
                     keepEntity,
@@ -85,11 +81,10 @@ import java.util.function.BiConsumer;
                     oldestData.allowInteraction,
                     summonType,
                     oldestData.persistent,
-                    totalSlots, // Combined slot cost!
+                    totalSlots,
                     oldestData.groupId
             );
 
-            // Callback for custom merge logic
             if (onMerge != null) {
                 onMerge.accept(keepEntity, totalSlots);
             }
@@ -112,7 +107,7 @@ import java.util.function.BiConsumer;
         UUID newestUuid = SummonTracker.getNewestSummonByType(owner.getUuid(), summonType);
 
         if (oldestUuid == null || newestUuid == null || oldestUuid.equals(newestUuid)) {
-            return null; // Can't merge
+            return null;
         }
 
         SummonData oldestData = SummonTracker.getSummonData(oldestUuid);
@@ -127,13 +122,11 @@ import java.util.function.BiConsumer;
 
         int newSlotCost = oldestData.slotCost + newestData.slotCost;
 
-        // Remove newest
         if (removeEntity != null) {
             removeEntity.discard();
         }
         SummonManager.unregisterSummon(owner, newestUuid, summonType);
 
-        // Update oldest
         SummonManager.unregisterSummon(owner, oldestUuid, summonType);
         SummonManager.registerSummon(
                 owner,
