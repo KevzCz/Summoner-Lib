@@ -188,4 +188,14 @@ public class SummonManager {
         int currentSlots = getSummonSlots(player, summonType);
         return Math.max(0, maxSlots - currentSlots);
     }
+    public static void enforceLimits(PlayerEntity player, ServerWorld world) {
+        net.pixeldreamstudios.summonerlib.util.SummonLimitEnforcer.enforceGlobalLimit(player, world);
+    }
+
+    public static boolean wouldExceedLimit(PlayerEntity player, String summonType, int slotCost) {
+        int maxSlots = getMaxSummons(player);
+        int currentSlots = getTotalSummonSlots(player);
+        return currentSlots + slotCost > maxSlots;
+    }
+
 }

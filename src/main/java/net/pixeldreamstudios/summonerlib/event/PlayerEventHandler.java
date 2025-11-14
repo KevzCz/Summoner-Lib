@@ -14,11 +14,13 @@ public class PlayerEventHandler {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             SummonTracker.cleanupPlayer(handler.player.getUuid());
             PlayerSummonData.clearAllSummons(handler.player);
+            AttributeChangeHandler.clearPlayerCache(handler.player.getUuid());
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             if (!alive) {
-               SummonTracker.cleanupPlayer(newPlayer.getUuid());
+                SummonTracker.cleanupPlayer(newPlayer.getUuid());
+                AttributeChangeHandler.clearPlayerCache(newPlayer.getUuid());
             }
         });
     }
