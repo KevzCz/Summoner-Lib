@@ -9,7 +9,8 @@ public record SummonType(
         boolean defaultPersistent,
         boolean defaultAllowInteraction,
         int defaultSlotCost,
-        String groupId
+        String groupId,
+        int maxCount
 ) {
 
     public static Builder builder(Identifier id) {
@@ -24,6 +25,7 @@ public record SummonType(
         private boolean defaultAllowInteraction = false;
         private int defaultSlotCost = 1;
         private String groupId = "default";
+        private int maxCount = -1;
 
         private Builder(Identifier id) {
             this.id = id;
@@ -60,8 +62,14 @@ public record SummonType(
             return this;
         }
 
+        public Builder maxCount(int maxCount) {
+            this.maxCount = maxCount;
+            return this;
+        }
+
         public SummonType build() {
-            return new SummonType(id, name, defaultLifetimeTicks, defaultPersistent, defaultAllowInteraction, defaultSlotCost, groupId);
+            return new SummonType(id, name, defaultLifetimeTicks, defaultPersistent,
+                    defaultAllowInteraction, defaultSlotCost, groupId, maxCount);
         }
     }
 }

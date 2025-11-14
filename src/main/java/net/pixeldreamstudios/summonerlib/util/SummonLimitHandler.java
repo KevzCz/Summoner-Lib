@@ -2,9 +2,9 @@ package net.pixeldreamstudios.summonerlib.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.pixeldreamstudios.summonerlib.api.ISummonable;
 import net.pixeldreamstudios.summonerlib.data.SummonData;
 import net.pixeldreamstudios.summonerlib.manager.SummonManager;
+import net.pixeldreamstudios.summonerlib.registry.SummonerRegistry;
 import net.pixeldreamstudios.summonerlib.tracker.SummonTracker;
 
 import java.util.UUID;
@@ -24,6 +24,21 @@ public class SummonLimitHandler {
     }
 
     public static boolean handleSummonLimit(PlayerEntity summoner, String summonType, int slotCost, Runnable onRemoveOldest) {
+
+        var registeredType = SummonerRegistry.getSummonType(summonType);
+        if (registeredType != null && registeredType.maxCount() >= 0) {
+            int currentCount = SummonTracker.getPlayerSummonCountByType(summoner.getUuid(), summonType);
+
+            if (currentCount >= registeredType.maxCount()) {
+                removeOldestSummon(summoner, summonType, onRemoveOldest);
+                return true;
+            }
+
+            if (slotCost == 0) {
+                return false;
+            }
+        }
+
         int maxSummons = SummonManager.getMaxSummons(summoner);
         int currentSlots = SummonTracker.getPlayerSummonSlotsByType(summoner.getUuid(), summonType);
 
@@ -94,6 +109,20 @@ public class SummonLimitHandler {
     }
 
     public static boolean canSummon(PlayerEntity summoner, String summonType, int slotCost) {
+        var registeredType = SummonerRegistry.getSummonType(summonType);
+        if (registeredType != null && registeredType.maxCount() >= 0) {
+            int currentCount = SummonTracker.getPlayerSummonCountByType(summoner.getUuid(), summonType);
+
+            if (currentCount >= registeredType.maxCount()) {
+                return false;
+            }
+
+            if (slotCost == 0) {
+                return true;
+            }
+        }
+
+        // Standard slot check
         int maxSummons = SummonManager.getMaxSummons(summoner);
         int currentSlots = SummonTracker.getPlayerSummonSlotsByType(summoner.getUuid(), summonType);
         return currentSlots + slotCost <= maxSummons;
