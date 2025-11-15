@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-/**
- * Utility for merging/combining summons
- */
     public class SummonMergeUtil {
 
     /**

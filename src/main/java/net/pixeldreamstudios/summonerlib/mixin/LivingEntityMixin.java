@@ -1,5 +1,7 @@
 package net.pixeldreamstudios.summonerlib.mixin;
 
+import net.critical_strike.api.CriticalDamageSource;
+import net.critical_strike.internal.CritLogic;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -66,19 +68,13 @@ public abstract class LivingEntityMixin {
 
             SummonCritUtil.markCrit(true, true);
 
+            ((CriticalDamageSource)source).rng_setCriticalDamageMultiplier((float)critDamage);
+
             if (FabricLoader.getInstance().isModLoaded("rpg-systems")) {
                 RPGSystemsCritCompat.markSummonCrit(source);
             }
 
-            serverWorld.spawnParticles(
-                    net.minecraft.particle.ParticleTypes.CRIT,
-                    ((LivingEntity)(Object)this).getX(),
-                    ((LivingEntity)(Object)this).getY() + ((LivingEntity)(Object)this).getHeight() / 2,
-                    ((LivingEntity)(Object)this).getZ(),
-                    15,
-                    0.3, 0.3, 0.3,
-                    0.1
-            );
+            CritLogic.playFxAt((LivingEntity)(Object)this, 1.0f);
 
             return newAmount;
         }

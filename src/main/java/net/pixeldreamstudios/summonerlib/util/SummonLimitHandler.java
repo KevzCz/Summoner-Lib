@@ -122,7 +122,6 @@ public class SummonLimitHandler {
             }
         }
 
-        // Standard slot check
         int maxSummons = SummonManager.getMaxSummons(summoner);
         int currentSlots = SummonTracker.getPlayerSummonSlotsByType(summoner.getUuid(), summonType);
         return currentSlots + slotCost <= maxSummons;

@@ -10,9 +10,6 @@ import net.pixeldreamstudios.summonerlib.tracker.SummonTracker;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Utility for enforcing summon limits when max summons change
- */
 public class SummonLimitEnforcer {
 
     /**
@@ -102,8 +99,8 @@ public class SummonLimitEnforcer {
      */
     private static Comparator<SummonData> getRemovalComparator() {
         return Comparator
-                .comparingInt((SummonData data) -> -data.slotCost) // Highest slot cost first (negative for descending)
-                .thenComparingLong(data -> data.spawnTick); // Oldest first (ascending)
+                .comparingInt((SummonData data) -> -data.slotCost)
+                .thenComparingLong(data -> data.spawnTick);
     }
 
     /**

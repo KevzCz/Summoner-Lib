@@ -8,9 +8,6 @@ import net.pixeldreamstudios.summonerlib.tracker.SummonTracker;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Utility for positioning summons in formations
- */
 public class SummonFormationUtil {
 
     /**

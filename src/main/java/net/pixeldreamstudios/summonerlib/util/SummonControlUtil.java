@@ -9,9 +9,6 @@ import net.pixeldreamstudios.summonerlib.tracker.SummonTracker;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Utility class for controlling summon behavior and targeting
- */
 public class SummonControlUtil {
 
     /**
